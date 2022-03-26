@@ -1,0 +1,7 @@
+body {
+    font: x-large "Times New Roman", serif;
+}
+
+.navbar-brand:first-child {
+    font-size: xxx-large;
+}
