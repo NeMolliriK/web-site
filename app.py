@@ -1,6 +1,6 @@
 from os import environ
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, abort
 from flask_login import login_required, logout_user, LoginManager, login_user
 from data import db_session
 from forms.authorization import LoginForm
@@ -27,9 +27,6 @@ def base():
 def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.password.data != form.password_again.data:
-            return render_template('registration.html', title='Registration', form=form,
-                                   message="Passwords do not match", registration=1)
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('registration.html', title='Registration', form=form,
                                    message="This user already exists", registration=1)
@@ -58,6 +55,11 @@ def login():
     return render_template('authorization.html', title='Authorization', form=form, authorization=1)
 
 
+@app.route('/staff')
+def staff():
+    return render_template("staff.html", title="School staff", staff=1)
+
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -73,6 +75,11 @@ def load_user(user_id):
 @app.errorhandler(401)
 def unauthorized(error):
     return render_template("unauthorized.html")
+
+
+@app.errorhandler(403)
+def not_enough_rights(error):
+    return render_template("not_enough_rights.html")
 
 
 if __name__ == '__main__':
