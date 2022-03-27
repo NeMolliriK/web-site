@@ -1,4 +1,5 @@
 from os import environ
+from dotenv import load_dotenv
 from flask import Flask, render_template, redirect
 from flask_login import login_required, logout_user, LoginManager, login_user
 from data import db_session
@@ -6,11 +7,13 @@ from forms.authorization import LoginForm
 from forms.registration import RegisterForm
 from data.users import User
 from waitress import serve
+from mail_sender import send_email
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)
+load_dotenv()
 db_session.global_init("db/school.db")
 db_sess = db_session.create_session()
 
@@ -32,6 +35,9 @@ def reqister():
                                    message="This user already exists", registration=1)
         user = User(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
                     date_of_birth=form.date_of_birth.data, email=form.email.data)
+        send_email(form.email.data, "Thank you for registering!",
+                   "Thank you very much for registering on our site! Hope we don't disappoint you!\nBest regards, our w"
+                   "ebsite team.", ["static/img/thank_you_for_registering.png"])
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()

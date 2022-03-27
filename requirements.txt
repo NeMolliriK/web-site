@@ -8,6 +8,7 @@ itsdangerous==2.1.2
 Jinja2==3.1.1
 MarkupSafe==2.1.1
 pip==22.0.4
+python-dotenv==0.20.0
 setuptools==61.1.1
 SQLAlchemy-serializer==1.4.1
 SQLAlchemy==1.4.32
