@@ -31,7 +31,16 @@
                         <a class="nav-link{% if authorization %} active{% endif %}" href="/login">Authorization</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if staff %} active{% endif %}" href="/login">School staff</a>
+                        <a class="nav-link{% if staff %} active{% endif %}" href="/staff">School staff</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if add_employee %} active{% endif %}" href="/add_employee">Add employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if pupils %} active{% endif %}" href="/pupils">Pupils</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if add_student %} active{% endif %}" href="/add_student">Add student</a>
                     </li>
                 </ul>
                 </form>

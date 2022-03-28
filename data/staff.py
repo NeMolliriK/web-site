@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import relation
 
 
-class Worker(SqlAlchemyBase, SerializerMixin):
+class Employee(SqlAlchemyBase, SerializerMixin):
     def set_date(self, date_of_birth):
         self.date_of_birth = date_of_birth
         self.age = relativedelta(date.today(), date_of_birth).years
@@ -21,7 +21,8 @@ class Worker(SqlAlchemyBase, SerializerMixin):
     speciality = Column(String, nullable=False)
     experience = Column(Integer, nullable=False)
     address = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False, index=True)
     native_city = Column(String, nullable=False)
     date_of_birth = Column(Date, nullable=False)
+    class_ = Column(String, unique=True)
     pupils = relation("Student", back_populates='teacher')

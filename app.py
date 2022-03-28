@@ -1,12 +1,14 @@
 from os import environ
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, abort
-from flask_login import login_required, logout_user, LoginManager, login_user
+from flask import Flask, render_template, redirect
+from flask_login import login_required, logout_user, LoginManager, login_user, current_user, AnonymousUserMixin
 from data import db_session
+from data.staff import Employee
 from forms.authorization import LoginForm
 from forms.registration import RegisterForm
 from data.users import User
 from waitress import serve
+from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
 
 app = Flask(__name__)
@@ -31,11 +33,12 @@ def reqister():
             return render_template('registration.html', title='Registration', form=form,
                                    message="This user already exists", registration=1)
         user = User(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
-                    date_of_birth=form.date_of_birth.data, email=form.email.data)
+                    email=form.email.data)
         send_email(form.email.data, "Thank you for registering!",
                    "Thank you very much for registering on our site! Hope we don't disappoint you!\nBest regards, our w"
                    "ebsite team.", ["static/img/thank_you_for_registering.png"])
         user.set_password(form.password.data)
+        user.set_date(form.date_of_birth.data)
         db_sess.add(user)
         db_sess.commit()
         return redirect('/login')
@@ -57,7 +60,42 @@ def login():
 
 @app.route('/staff')
 def staff():
-    return render_template("staff.html", title="School staff", staff=1)
+    return render_template("staff.html", title="School staff", staff=db_sess.query(Employee),
+                           director=1 if current_user.is_authenticated and current_user.id == 1 else 0)
+
+
+@app.route('/add_employee', methods=['GET', 'POST'])
+@login_required
+def add_employee():
+    if current_user.is_authenticated and current_user.id != 1:
+        return render_template("not_enough_rights.html", add_employee=1, title="Not enough rights")
+    form = AddEmployee()
+    if form.validate_on_submit():
+        if db_sess.query(User).filter(User.email == form.email.data).first() or db_sess.query(Employee).filter(
+                Employee.email == form.email.data).first():
+            return render_template('employee.html', title='Adding an employee', form=form,
+                                   message="The person with this email is already registered", add_employee=1)
+        if form.classroom_teacher.data and db_sess.query(Employee).filter(Employee.class_ == form.class_.data).first():
+            return render_template("employee.html", title='Adding an employee', add_employee=1, form=form,
+                                   h='Adding an employee', message="The class teacher for this class already exists")
+        employee = Employee(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
+                            position=form.position.data, speciality=form.speciality.data,
+                            experience=form.experience.data, address=form.address.data, email=form.email.data,
+                            native_city=form.native_city.data)
+        employee.set_date(form.date_of_birth.data)
+        if form.classroom_teacher.data:
+            employee.class_ = form.class_.data
+        user = User(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
+                    email=form.email.data)
+        user.set_password(form.password.data)
+        user.set_date(form.date_of_birth.data)
+        db_sess.add(employee)
+        db_sess.add(user)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/staff')
+    return render_template("employee.html", title='Adding an employee', add_employee=1, form=form,
+                           h='Adding an employee')
 
 
 @app.route('/logout')
