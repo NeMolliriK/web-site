@@ -20,8 +20,8 @@ class AddStudent(FlaskForm):
 
 class EditStudent(FlaskForm):
     email = EmailField('Email', validators=[InputRequired()])
-    password = PasswordField('Password', validators=[InputRequired(), EqualTo('password_again')])
-    password_again = PasswordField('Confirm password', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    password_again = PasswordField('Confirm password', validators=[InputRequired(), EqualTo('password')])
     surname = StringField('Surname', validators=[InputRequired()])
     name = StringField('Name', validators=[InputRequired()])
     patronymic = StringField('Patronymic', validators=[InputRequired()])

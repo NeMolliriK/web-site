@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% block content %}
     <div class="container">
-        <h1>{{ h }}</h1>
+        <h1>Editing an employee</h1>
         {% if message %}
             <div class="alert alert-danger" role="alert">{{ message }}</div>
         {% endif %}
@@ -61,15 +61,6 @@
                 {% endfor %}
             </p>
             <p>
-                {{ form.date_of_birth.label }}<br>
-                {{ form.date_of_birth(class="form-control") }}<br>
-                {% for error in form.date_of_birth.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
-            <p>
                 {{ form.position.label }}<br>
                 {{ form.position(class="form-control") }}<br>
                 {% for error in form.position.errors %}
@@ -110,15 +101,6 @@
                 {{ form.address.label }}<br>
                 {{ form.address(class="form-control") }}<br>
                 {% for error in form.address.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
-            <p>
-                {{ form.native_city.label }}<br>
-                {{ form.native_city(class="form-control") }}<br>
-                {% for error in form.native_city.errors %}
                     <p class="alert alert-danger" role="alert">
                         {{ error }}
                     </p>

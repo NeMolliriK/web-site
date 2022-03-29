@@ -25,12 +25,15 @@
                     <td>{{ employee.position }}</td>
                     <td>{{ employee.speciality }}</td>
                     <td>{{ employee.experience }}</td>
-                    <td>{% if employee.class_ %}{{ employee.class_ }}{% endif %}</td>
+                    {% if employee.class_ %}
+                        <td>{{ employee.class_ }}</td>
+                    {% endif %}
                 </tr>
             </table>
             {% if director %}
                 <a class="btn btn-warning" href="/edit_employee/{{ employee.id }}" role="button">Edit employee</a>
-                <a class="btn btn-danger" href="/delete_employee/{{ employee.id }}" role="button">Delete employee</a>
+                <a class="btn btn-danger" href="/delete_an_employee/{{ employee.id }}" role="button">Delete an
+                    employee</a>
             {% endif %}
         {% endfor %}
     </div>

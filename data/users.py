@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relation
 from .db_session import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -27,3 +28,4 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     date_of_birth = Column(Date, nullable=False)
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
+    teacher = relation("Employee", back_populates='user', uselist=False)

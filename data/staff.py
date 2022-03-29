@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date
@@ -21,8 +21,8 @@ class Employee(SqlAlchemyBase, SerializerMixin):
     speciality = Column(String, nullable=False)
     experience = Column(Integer, nullable=False)
     address = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, ForeignKey("users.email"), unique=True, nullable=False, index=True)
     native_city = Column(String, nullable=False)
     date_of_birth = Column(Date, nullable=False)
     class_ = Column(String, unique=True)
-    pupils = relation("Student", back_populates='teacher')
+    user = relation('User')
