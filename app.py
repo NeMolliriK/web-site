@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)
 load_dotenv()
-db_session.global_init("db/school.db")
+db_session.global_init("db/school.sqlite")
 db_sess = db_session.create_session()
 
 

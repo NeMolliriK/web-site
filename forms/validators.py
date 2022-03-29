@@ -21,7 +21,6 @@ class RequiredIf(InputRequired):
         self.message = message
 
     def __call__(self, form, field):
-        print(form[self.other_field_name].data)
         if form[self.other_field_name].data:
             super(RequiredIf, self).__call__(form, field)
 
