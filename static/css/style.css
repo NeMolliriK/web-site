@@ -5,3 +5,23 @@ body {
 .navbar-brand:first-child {
     font-size: xxx-large;
 }
+
+h1 {
+    text-align: center;
+}
+
+caption {
+    caption-side: top;
+    color: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+td {
+    padding: 5px;
+    border: 1px solid black;
+}
