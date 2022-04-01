@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %} {% block content %}
+    <div class="container">
+        <h1>Pupils</h1>
+        {% if message %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endif %}
+        {% for student in pupils %}
+            <table>
+                <caption>
+                    <h2>Student # {{ loop.index }}</h2>
+                </caption>
+                <tr>
+                    <td>Full name</td>
+                    <td>Age</td>
+                    <td>Class</td>
+                    <td>Native city</td>
+                </tr>
+                <tr>
+                    <td>{{ student.surname + " " + student.name + " " + student.patronymic }}</td>
+                    <td>{{ student.age }}</td>
+                    <td>{{ student.class_ }}</td>
+                    <td>{{ student.native_city }}</td>
+                </tr>
+            </table>
+            {% if director or access[loop.index0] %}
+                <a class="btn btn-warning" href="/edit_student/{{ student.id }}" role="button">Edit student</a>
+                <a class="btn btn-danger" href="/delete_student/{{ student.id }}" role="button">Delete student</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

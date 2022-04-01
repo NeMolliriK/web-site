@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request
 from flask_login import login_required, logout_user, LoginManager, login_user, current_user
 from data import db_session
+from data.pupils import Student
 from data.staff import Employee
 from forms.authorization import LoginForm
 from forms.registration import RegisterForm
@@ -10,6 +11,7 @@ from data.users import User
 from waitress import serve
 from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
+from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
@@ -69,12 +71,11 @@ def staff():
 @app.route('/add_employee', methods=['GET', 'POST'])
 @login_required
 def add_employee():
-    if current_user.is_authenticated and current_user.id != 1:
+    if current_user.id != 1:
         return render_template("not_enough_rights.html", add_employee=1, title="Not enough rights")
     form = AddEmployee()
     if form.validate_on_submit():
-        if db_sess.query(User).filter(User.email == form.email.data).first() or db_sess.query(Employee).filter(
-                Employee.email == form.email.data).first():
+        if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('add_employee.html', title='Adding an employee', form=form,
                                    message="The person with this email is already registered", add_employee=1)
         if form.classroom_teacher.data and db_sess.query(Employee).filter(Employee.class_ == form.class_.data).first():
@@ -93,7 +94,6 @@ def add_employee():
         user.set_date(form.date_of_birth.data)
         db_sess.add(employee)
         db_sess.add(user)
-        db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/staff')
     return render_template("add_employee.html", title='Adding an employee', add_employee=1, form=form)
@@ -148,6 +148,56 @@ def delete_an_employee(id):
     db_sess.delete(employee)
     db_sess.commit()
     return redirect('/staff')
+
+
+@app.route('/pupils')
+@login_required
+def pupils():
+    if not current_user.employee and current_user.id != 1:
+        return render_template("not_enough_rights.html", pupils=1, title="Not enough rights")
+    pupils = db_sess.query(Student)
+    if current_user.id == 1:
+        return render_template("pupils.html", title="Pupils", pupils=pupils, director=1)
+    access = []
+    for student in pupils:
+        try:
+            if "завуч" in current_user.employee.position.lower() or current_user.employee.class_ == student.class_:
+                access += [1]
+            else:
+                raise AttributeError
+        except AttributeError:
+            access += [0]
+    return render_template("pupils.html", title="Pupils", pupils=pupils, access=access)
+
+
+@app.route('/add_student', methods=['GET', 'POST'])
+@login_required
+def add_student():
+    try:
+        if current_user.id != 1 and "завуч" not in current_user.employee.position.lower() and not \
+                current_user.employee.class_:
+            raise AttributeError
+    except AttributeError:
+        return render_template("not_enough_rights.html", add_student=1, title="Not enough rights")
+    c = current_user.id == 1 or not current_user.employee.class_
+    form = AddStudent() if c else AddStudentWithoutClass()
+    if form.validate_on_submit():
+        if db_sess.query(User).filter(User.email == form.email.data).first():
+            return render_template('add_student.html', title='Adding an student', form=form,
+                                   message="The person with this email is already registered", add_student=1)
+        student = Student(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
+                          address=form.address.data, email=form.email.data, native_city=form.native_city.data,
+                          class_=form.class_.data if c else current_user.employee.class_)
+        user = User(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
+                    email=form.email.data)
+        student.set_date(form.date_of_birth.data)
+        user.set_password(form.password.data)
+        user.set_date(form.date_of_birth.data)
+        db_sess.add(student)
+        db_sess.add(user)
+        db_sess.commit()
+        return redirect('/pupils')
+    return render_template("add_student.html", title='Adding an student', add_student=1, form=form, class_=c)
 
 
 @app.route('/logout')

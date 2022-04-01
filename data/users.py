@@ -28,4 +28,4 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     date_of_birth = Column(Date, nullable=False)
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
-    teacher = relation("Employee", back_populates='user', uselist=False)
+    employee = relation("Employee", back_populates='user', uselist=False)

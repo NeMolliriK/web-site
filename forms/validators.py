@@ -33,7 +33,7 @@ class ClassCorrectness:
         data = field.data
         if data:
             try:
-                if len(data) != 3 or data[1] != "-" or not 0 < int(data[0]) < 12 or data[2] not in ["А", "Б", "В"]:
+                if not 0 < int(data.split("-")[0]) < 12 or data.split("-")[1] not in ["А", "Б", "В"]:
                     raise Exception
             except Exception:
                 raise ValidationError(self.message)
