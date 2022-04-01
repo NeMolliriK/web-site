@@ -60,15 +60,17 @@
                     </p>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.class_.label }}<br>
-                {{ form.class_(class="form-control") }}<br>
-                {% for error in form.class_.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
+            {% if class_ %}
+                <p>
+                    {{ form.class_.label }}<br>
+                    {{ form.class_(class="form-control") }}<br>
+                    {% for error in form.class_.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </p>
+            {% endif %}
             <p>
                 {{ form.address.label }}<br>
                 {{ form.address(class="form-control") }}<br>

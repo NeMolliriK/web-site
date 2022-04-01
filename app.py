@@ -11,7 +11,7 @@ from data.users import User
 from waitress import serve
 from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
-from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass
+from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass, EditStudentWithoutClass
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
@@ -135,6 +135,8 @@ def edit_employee(id):
         if form.classroom_teacher.data:
             employee.class_ = form.class_.data
         user.set_password(form.password.data)
+        employee.update_age()
+        employee.user.update_age()
         db_sess.commit()
         return redirect('/staff')
     return render_template('edit_employee.html', title='Editing an employee', form=form, edit_employee=1)
@@ -183,8 +185,12 @@ def add_student():
     form = AddStudent() if c else AddStudentWithoutClass()
     if form.validate_on_submit():
         if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('add_student.html', title='Adding an student', form=form,
-                                   message="The person with this email is already registered", add_student=1)
+            return render_template('add_student.html', title='Adding a student', form=form,
+                                   message="The person with this email is already registered", add_student=1, class_=c)
+        if c and not db_sess.query(Employee).filter(Employee.class_ == form.class_.data).first():
+            return render_template('add_student.html', title='Adding a student', form=form,
+                                   message="A class teacher has not yet been appointed for this class", add_student=1,
+                                   class_=c)
         student = Student(surname=form.surname.data, name=form.name.data, patronymic=form.patronymic.data,
                           address=form.address.data, email=form.email.data, native_city=form.native_city.data,
                           class_=form.class_.data if c else current_user.employee.class_)
@@ -197,7 +203,55 @@ def add_student():
         db_sess.add(user)
         db_sess.commit()
         return redirect('/pupils')
-    return render_template("add_student.html", title='Adding an student', add_student=1, form=form, class_=c)
+    return render_template("add_student.html", title='Adding a student', add_student=1, form=form, class_=c)
+
+
+@app.route('/edit_student/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_student(id):
+    c = current_user.id == 1 or not current_user.employee.class_
+    form = EditStudent() if c else EditStudentWithoutClass()
+    student = db_sess.query(Student).get(id)
+    if request.method == "GET":
+        form.email.data = student.email
+        form.surname.data = student.surname
+        form.name.data = student.name
+        form.patronymic.data = student.patronymic
+        if c:
+            form.class_.data = student.class_
+        form.address.data = student.address
+    if form.validate_on_submit():
+        user = student.user
+        if db_sess.query(User).filter(User.email == form.email.data).first() != user:
+            return render_template('edit_student.html', title='Editing a student', form=form,
+                                   message="The person with this email already exists", edit_student=1, class_=c)
+        if c and not db_sess.query(Employee).filter(Employee.class_ == form.class_.data).first():
+            return render_template('edit_student.html', title='Editing a student', form=form,
+                                   message="A class teacher has not yet been appointed for this class", edit_student=1,
+                                   class_=c)
+        student.email = user.email = form.email.data
+        student.surname = user.surname = form.surname.data
+        student.name = user.name = form.name.data
+        student.patronymic = user.patronymic = form.patronymic.data
+        student.address = form.address.data
+        if c:
+            student.class_ = form.class_.data
+        user.set_password(form.password.data)
+        student.update_age()
+        user.update_age()
+        db_sess.commit()
+        return redirect('/pupils')
+    return render_template('edit_student.html', title='Editing a student', form=form, edit_student=1, class_=c)
+
+
+@app.route('/delete_student/<int:id>')
+@login_required
+def delete_student(id):
+    student = db_sess.query(Student).get(id)
+    db_sess.delete(student.user)
+    db_sess.delete(student)
+    db_sess.commit()
+    return redirect('/pupils')
 
 
 @app.route('/logout')

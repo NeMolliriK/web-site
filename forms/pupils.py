@@ -41,3 +41,14 @@ class AddStudentWithoutClass(FlaskForm):
     address = StringField('Address', validators=[InputRequired()])
     native_city = StringField('Native city', validators=[InputRequired()])
     submit = SubmitField('Add student')
+
+
+class EditStudentWithoutClass(FlaskForm):
+    email = EmailField('Email', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    password_again = PasswordField('Confirm password', validators=[InputRequired(), EqualTo('password')])
+    surname = StringField('Surname', validators=[InputRequired()])
+    name = StringField('Name', validators=[InputRequired()])
+    patronymic = StringField('Patronymic', validators=[InputRequired()])
+    address = StringField('Address', validators=[InputRequired()])
+    submit = SubmitField('Edit student')

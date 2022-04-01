@@ -11,6 +11,9 @@ class Student(SqlAlchemyBase, SerializerMixin):
         self.date_of_birth = date_of_birth
         self.age = relativedelta(date.today(), date_of_birth).years
 
+    def update_age(self):
+        self.age = relativedelta(date.today(), self.date_of_birth).years
+
     __tablename__ = 'pupils'
     id = Column(Integer, primary_key=True, autoincrement=True)
     surname = Column(String, nullable=False)
@@ -19,7 +22,8 @@ class Student(SqlAlchemyBase, SerializerMixin):
     age = Column(Integer, nullable=False)
     class_ = Column(String, ForeignKey("staff.class_"), nullable=False)
     address = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, ForeignKey("users.email"), unique=True, nullable=False, index=True)
     native_city = Column(String, nullable=False)
     date_of_birth = Column(Date, nullable=False)
     teacher = relation('Employee')
+    user = relation('User')
