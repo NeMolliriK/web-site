@@ -121,7 +121,8 @@ def edit_employee(id):
             return render_template('edit_employee.html', title='Editing an employee', form=form,
                                    message="The person with this email already exists", edit_employee=1)
         if form.classroom_teacher.data and db_sess.query(Employee).filter(
-                Employee.class_ == form.class_.data).first() != employee:
+                Employee.class_ == form.class_.data).first() and db_sess.query(Employee).filter(
+            Employee.class_ == form.class_.data).first() != employee:
             return render_template("edit_employee.html", title='Editing an employee', edit_employee=1, form=form,
                                    message="The class teacher for this class already exists")
         employee.email = user.email = form.email.data
