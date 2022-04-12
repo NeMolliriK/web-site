@@ -1,14 +1,15 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField, EmailField, DateField
-from wtforms.validators import DataRequired
+from wtforms.validators import InputRequired, EqualTo
+from .validators import AgeVerification
 
 
 class RegisterForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    password_again = PasswordField('Confirm password', validators=[DataRequired()])
-    surname = StringField('Surname', validators=[DataRequired()])
-    name = StringField('Name', validators=[DataRequired()])
-    patronymic = StringField('Patronymic', validators=[DataRequired()])
-    date_of_birth = DateField("Date of birth", validators=[DataRequired()])
+    email = EmailField('Email', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    password_again = PasswordField('Confirm password', validators=[InputRequired(), EqualTo('password')])
+    surname = StringField('Surname', validators=[InputRequired()])
+    name = StringField('Name', validators=[InputRequired()])
+    patronymic = StringField('Patronymic', validators=[InputRequired()])
+    date_of_birth = DateField("Date of birth", validators=[InputRequired(), AgeVerification(14)])
     submit = SubmitField('Register')

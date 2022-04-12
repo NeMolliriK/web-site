@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block content %}
+    <div class="container">
+        <h1>School staff</h1>
+        {% if message %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endif %}
+        {% for employee in staff %}
+            <table>
+                <caption>
+                    <h2>Employee # {{ loop.index }}</h2>
+                </caption>
+                <tr>
+                    <td>Full name</td>
+                    <td>Age</td>
+                    <td>Position</td>
+                    <td>Speciality</td>
+                    <td>Work experience</td>
+                    {% if employee.class_ %}
+                        <td>Class</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>{{ employee.surname + " " + employee.name + " " + employee.patronymic }}</td>
+                    <td>{{ employee.age }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.speciality }}</td>
+                    <td>{{ employee.experience }}</td>
+                    {% if employee.class_ %}
+                        <td>{{ employee.class_ }}</td>
+                    {% endif %}
+                </tr>
+            </table>
+            {% if director %}
+                <a class="btn btn-warning" href="/edit_employee/{{ employee.id }}" role="button">Edit employee</a>
+                <a class="btn btn-danger" href="/delete_an_employee/{{ employee.id }}" role="button">Delete an
+                    employee</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

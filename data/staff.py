@@ -1,20 +1,12 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
-from sqlalchemy.orm import relation
 from .db_session import SqlAlchemyBase
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from sqlalchemy.orm import relation
 
 
-class User(SqlAlchemyBase, UserMixin, SerializerMixin):
-    def set_password(self, password):
-        self.hashed_password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.hashed_password, password)
-
+class Employee(SqlAlchemyBase, SerializerMixin):
     def set_date(self, date_of_birth):
         self.date_of_birth = date_of_birth
         self.age = relativedelta(date.today(), date_of_birth).years
@@ -22,14 +14,19 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     def update_age(self):
         self.age = relativedelta(date.today(), self.date_of_birth).years
 
-    __tablename__ = 'users'
+    __tablename__ = 'staff'
     id = Column(Integer, primary_key=True, autoincrement=True)
     surname = Column(String, nullable=False)
     name = Column(String, nullable=False)
     patronymic = Column(String, nullable=False)
     age = Column(Integer, nullable=False)
+    position = Column(String, nullable=False)
+    speciality = Column(String, nullable=False)
+    experience = Column(Integer, nullable=False)
+    address = Column(String, nullable=False)
+    email = Column(String, ForeignKey("users.email"), unique=True, nullable=False, index=True)
+    native_city = Column(String, nullable=False)
     date_of_birth = Column(Date, nullable=False)
-    email = Column(String, unique=True, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
-    employee = relation("Employee", back_populates='user', uselist=False)
-    student = relation("Student", back_populates='user', uselist=False)
+    class_ = Column(String, unique=True)
+    user = relation('User')
+    pupils = relation("Student", back_populates='teacher')
