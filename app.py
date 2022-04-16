@@ -2,6 +2,7 @@ from os import environ
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request
 from flask_login import login_required, logout_user, LoginManager, login_user, current_user
+from flask_restful import Api
 from data import db_session
 from data.pupils import Student
 from data.staff import Employee
@@ -12,10 +13,12 @@ from waitress import serve
 from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
 from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass, EditStudentWithoutClass
-from modules.rest import RestAPI
+from rest_api import users_resources
 
 app = Flask(__name__)
-api = RestAPI(app)
+api = Api(app)
+api.add_resource(users_resources.UsersListResource, '/api/users')
+api.add_resource(users_resources.UsersResource, '/api/users/<int:user_id>')
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)

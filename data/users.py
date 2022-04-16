@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relation
 from .db_session import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
