@@ -1,13 +1,18 @@
 from flask_restful import reqparse, abort, Resource
 from data import db_session
 from data.users import User
+from flask import jsonify
 
 parser = reqparse.RequestParser()
-parser.add_argument('title', required=True)
-parser.add_argument('content', required=True)
-parser.add_argument('is_private', required=True, type=bool)
-parser.add_argument('is_published', required=True, type=bool)
-parser.add_argument('user_id', required=True, type=int)
+parser.add_argument('id', required=True)
+parser.add_argument('surname', required=True)
+parser.add_argument('name', required=True, type=bool)
+parser.add_argument('patronymic', required=True, type=bool)
+parser.add_argument('age', required=True, type=int)
+parser.add_argument('date_of_birth', required=True, type=int)
+parser.add_argument('email', required=True, type=int)
+parser.add_argument('employee', required=True, type=int)
+parser.add_argument('student', required=True, type=int)
 
 
 def abort_if_user_not_found(user_id):
@@ -17,18 +22,18 @@ def abort_if_user_not_found(user_id):
 
 
 class UsersResource(Resource):
-    def get(self, news_id):
-        abort_if_news_not_found(news_id)
+    def get(self, user_id):
+        abort_if_user_not_found(user_id)
         session = db_session.create_session()
-        news = session.query(News).get(news_id)
-        return jsonify({'news': news.to_dict(
-            only=('title', 'content', 'user_id', 'is_private'))})
+        user = session.query(User).get(user_id)
+        return jsonify({'User': user.to_dict(
+            only=('id', 'surname', 'name', 'patronymic', 'date_of_birth', 'email', 'employee', 'student'))})
 
-    def delete(self, news_id):
-        abort_if_news_not_found(news_id)
+    def delete(self, user_id):
+        abort_if_user_not_found(user_id)
         session = db_session.create_session()
-        news = session.query(News).get(news_id)
-        session.delete(news)
+        user = session.query(User).get(user_id)
+        session.delete(user)
         session.commit()
         return jsonify({'success': 'OK'})
 
@@ -36,20 +41,21 @@ class UsersResource(Resource):
 class UsersListResource(Resource):
     def get(self):
         session = db_session.create_session()
-        news = session.query(News).all()
-        return jsonify({'news': [item.to_dict(
-            only=('title', 'content', 'user.name')) for item in news]})
+        user = session.query(User).all()
+        return jsonify({'user': [item.to_dict(
+            only=('id', 'email', 'employee', 'student')) for item in user]})
 
     def post(self):
         args = parser.parse_args()
         session = db_session.create_session()
-        news = News(
-            title=args['title'],
-            content=args['content'],
-            user_id=args['user_id'],
-            is_published=args['is_published'],
-            is_private=args['is_private']
+        user = User(
+            surname=args['surname'],
+            name=args['name'],
+            patronymic=args['patronymic'],
+            date_of_birth=args['date_of_birth'],
+            email=args['email'],
+            hashed_password=args['hashed_password']
         )
-        session.add(news)
+        session.add(user)
         session.commit()
         return jsonify({'success': 'OK'})
