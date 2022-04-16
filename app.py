@@ -12,8 +12,10 @@ from waitress import serve
 from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
 from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass, EditStudentWithoutClass
+from modules.rest import RestAPI
 
 app = Flask(__name__)
+api = RestAPI(app)
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)
