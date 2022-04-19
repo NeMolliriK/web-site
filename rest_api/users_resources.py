@@ -24,6 +24,26 @@ class UsersResource(Resource):
         db_sess.commit()
         return jsonify({'success': 'OK'})
 
+    def put(self, user_id):
+        args = parser.parse_args()
+        abort_if_user_not_found(user_id)
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).get(user_id)
+        if 'password' in args:
+            user.set_password(args['password'])
+        if 'date_of_birth' in args:
+            user.set_date(args["date_of_birth"])
+        if 'surname' in args:
+            user.surname = args['surname']
+        if 'name' in args:
+            user.name = args['name']
+        if 'patronymic' in args:
+            user.patronymic = args['patronymic']
+        if 'email' in args:
+            user.email = args['email']
+        db_sess.commit()
+        return jsonify({'success': 'OK'})
+
 
 class UsersListResource(Resource):
     def get(self):
