@@ -31,8 +31,6 @@ class UsersResource(Resource):
         user = db_sess.query(User).get(user_id)
         if 'password' in args:
             user.set_password(args['password'])
-        if 'date_of_birth' in args:
-            user.set_date(args["date_of_birth"])
         if 'surname' in args:
             user.surname = args['surname']
         if 'name' in args:
