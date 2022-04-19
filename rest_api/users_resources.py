@@ -25,7 +25,7 @@ class UsersResource(Resource):
         return jsonify({'success': 'OK'})
 
     def put(self, user_id):
-        args = parser.parse_args()
+        args = put_parser.parse_args()
         abort_if_user_not_found(user_id)
         db_sess = db_session.create_session()
         user = db_sess.query(User).get(user_id)
@@ -67,3 +67,10 @@ parser.add_argument('patronymic', required=True)
 parser.add_argument('date_of_birth', required=True, type=date)
 parser.add_argument('email', required=True)
 parser.add_argument('password', required=True)
+
+put_parser = reqparse.RequestParser()
+put_parser.add_argument('surname')
+put_parser.add_argument('name')
+put_parser.add_argument('patronymic')
+put_parser.add_argument('email')
+put_parser.add_argument('password')
