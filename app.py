@@ -14,11 +14,14 @@ from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
 from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass, EditStudentWithoutClass
 from rest_api.users_resources import UsersListResource, UsersResource
+from rest_api.staff_resources import StaffListResource, StaffResource
 
 app = Flask(__name__)
 api = Api(app)
 api.add_resource(UsersListResource, '/api/users')
 api.add_resource(UsersResource, '/api/users/<int:user_id>')
+api.add_resource(StaffListResource, '/api/staff')
+api.add_resource(StaffResource, '/api/staff/<int:user_id>')
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)
