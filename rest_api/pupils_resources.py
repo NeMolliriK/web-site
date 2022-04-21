@@ -78,8 +78,8 @@ class StudentListResource(Resource):
     def get(self):
         if not check_api_key():
             return
-        return jsonify({'staff': [user.to_dict(
-            only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email', 'hashed_password')) for user
+        return jsonify({'student': [user.to_dict(
+            only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email')) for user
             in db_session.create_session().query(Student).all()]})
 
     def post(self):
