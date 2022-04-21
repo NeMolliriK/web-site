@@ -4,6 +4,15 @@ from data.users import User
 from data.pupils import Student
 from flask import jsonify
 from datetime import date
+from modules import key
+
+
+def check_api_key():
+    add_args = put_parser.parse_args()
+    if not key.check_key(add_args['key']):
+        abort(404, message=f"Error: No valid API key provided")
+        return False
+    return True
 
 
 def abort_if_student_not_found(user_id):
@@ -12,12 +21,16 @@ def abort_if_student_not_found(user_id):
         abort(404, message=f"Student {user_id} not found")
 
 
-class StaffResource(Resource):
+class StudentResource(Resource):
     def get(self, user_id):
+        if not check_api_key():
+            return
         abort_if_student_not_found(user_id)
         return jsonify({'student': db_session.create_session().query(Student).get(user_id).to_dict()})
 
     def delete(self, user_id):
+        if not check_api_key():
+            return
         abort_if_student_not_found(user_id)
         db_sess = db_session.create_session()
         user = db_sess.query(Student).get(user_id)['user']
@@ -28,6 +41,8 @@ class StaffResource(Resource):
         return jsonify({'success': 'OK'})
 
     def put(self, user_id):
+        if not check_api_key():
+            return
         args = put_parser.parse_args()
         abort_if_student_not_found(user_id)
         db_sess = db_session.create_session()
@@ -59,13 +74,17 @@ class StaffResource(Resource):
         return jsonify({'success': 'OK'})
 
 
-class StaffListResource(Resource):
+class StudentListResource(Resource):
     def get(self):
+        if not check_api_key():
+            return
         return jsonify({'staff': [user.to_dict(
             only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email', 'hashed_password')) for user
             in db_session.create_session().query(Student).all()]})
 
     def post(self):
+        if not check_api_key():
+            return
         args = parser.parse_args()
         db_sess = db_session.create_session()
         student = Student(surname=args['surname'], name=args['name'], patronymic=args['patronymic'],
@@ -105,3 +124,4 @@ parser.add_argument('native_city')
 parser.add_argument('class_')
 parser.add_argument('email')
 parser.add_argument('password')
+put_parser.add_argument('key', required=True)
