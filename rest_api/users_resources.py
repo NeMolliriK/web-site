@@ -5,12 +5,14 @@ from flask import jsonify
 from datetime import date
 from modules import key
 
+
 def check_api_key():
     add_args = put_parser.parse_args()
     if not key.check_key(add_args['key']):
         abort(404, message=f"Error: No valid API key provided")
         return False
     return True
+
 
 def abort_if_user_not_found(user_id):
     user = db_session.create_session().query(User).get(user_id)
@@ -62,7 +64,7 @@ class UsersListResource(Resource):
         if not check_api_key():
             return
         return jsonify({'users': [user.to_dict(
-            only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email', 'hashed_password')) for user
+            only=('id', 'surname', 'name', 'patronymic', 'email')) for user
             in db_session.create_session().query(User).all()]})
 
     def post(self):

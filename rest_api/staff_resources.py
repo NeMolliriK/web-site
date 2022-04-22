@@ -27,7 +27,12 @@ class StaffResource(Resource):
         if not check_api_key():
             return
         abort_if_employee_not_found(user_id)
-        return jsonify({'employee': db_session.create_session().query(Employee).get(user_id).to_dict()})
+        return jsonify(
+            {'employee': db_session.create_session().query(Employee).options(joinedload('*')).get(user_id).to_dict(
+                only=(
+                    'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address',
+                    'email', 'native_city', 'date_of_birth', 'class_', 'pupils.id', 'user.id')
+            )})
 
     def delete(self, user_id):
         if not check_api_key():
@@ -85,9 +90,8 @@ class StaffListResource(Resource):
             return
         return jsonify({'staff': [user.to_dict(
             only=(
-            'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address', 'email',
-            'native_city', 'date_of_birth', 'class_', 'user', 'pupils')) for user
-            in db_session.create_session().query(Employee).options(joinedload('*')).all()]})
+                'id', 'surname', 'name', 'patronymic', 'position', 'email', 'class_')) for user in
+            db_session.create_session().query(Employee).options(joinedload('*')).all()]})
 
     def post(self):
         if not check_api_key():

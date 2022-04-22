@@ -27,11 +27,12 @@ class StudentResource(Resource):
         if not check_api_key():
             return
         abort_if_student_not_found(user_id)
-        return jsonify({'student': db_session.create_session().query(Student).options(joinedload('*')).get(user_id).to_dict(
-            only=(
-                'id', 'surname', 'name', 'patronymic', 'age', 'class_', 'address', 'email', 'native_city',
-                'date_of_birth', 'teacher', 'user')
-        )})
+        return jsonify(
+            {'student': db_session.create_session().query(Student).options(joinedload('*')).get(user_id).to_dict(
+                only=(
+                    'id', 'surname', 'name', 'patronymic', 'age', 'class_', 'address', 'email', 'native_city',
+                    'date_of_birth', 'teacher.id', 'teacher.surname', 'teacher.name', 'teacher.patronymic', 'user.id')
+            )})
 
     def delete(self, user_id):
         if not check_api_key():
@@ -83,8 +84,8 @@ class StudentListResource(Resource):
     def get(self):
         if not check_api_key():
             return
-        return jsonify({'student': [user.to_dict(
-            only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email')) for user
+        return jsonify({'pupils': [user.to_dict(
+            only=('id', 'surname', 'name', 'patronymic', 'class_', 'email')) for user
             in db_session.create_session().query(Student).all()]})
 
     def post(self):
