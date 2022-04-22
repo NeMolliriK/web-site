@@ -83,7 +83,9 @@ class StaffListResource(Resource):
         if not check_api_key():
             return
         return jsonify({'staff': [user.to_dict(
-            only=('id', 'surname', 'name', 'patronymic', 'age', 'date_of_birth', 'email')) for user
+            only=(
+            'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address', 'email',
+            'native_city', 'date_of_birth', 'class_', 'user', 'pupils')) for user
             in db_session.create_session().query(Employee).all()]})
 
     def post(self):
