@@ -5,6 +5,7 @@ from data.staff import Employee
 from flask import jsonify
 from datetime import date
 from modules import key
+from sqlalchemy.orm import joinedload
 
 
 def check_api_key():
@@ -86,7 +87,7 @@ class StaffListResource(Resource):
             only=(
             'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address', 'email',
             'native_city', 'date_of_birth', 'class_', 'user', 'pupils')) for user
-            in db_session.create_session().query(Employee).all()]})
+            in db_session.create_session().query(Employee).options(joinedload('*')).all()]})
 
     def post(self):
         if not check_api_key():

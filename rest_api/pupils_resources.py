@@ -5,6 +5,7 @@ from data.pupils import Student
 from flask import jsonify
 from datetime import date
 from modules import key
+from sqlalchemy.orm import joinedload
 
 
 def check_api_key():
@@ -26,9 +27,11 @@ class StudentResource(Resource):
         if not check_api_key():
             return
         abort_if_student_not_found(user_id)
-        return jsonify({'student': [student.to_dict(only=(
-            'id', 'surname', 'name', 'patronymic', 'age', 'class_', 'address', 'email', 'native_city', 'date_of_birth',
-            'teacher', 'user')) for student in db_session.create_session().query(Student).all()]})
+        return jsonify({'student': db_session.create_session().query(Student).options(joinedload('*')).get(user_id).to_dict(
+            only=(
+                'id', 'surname', 'name', 'patronymic', 'age', 'class_', 'address', 'email', 'native_city',
+                'date_of_birth', 'teacher', 'user')
+        )})
 
     def delete(self, user_id):
         if not check_api_key():
