@@ -5,7 +5,6 @@ from data.staff import Employee
 from flask import jsonify
 from datetime import date
 from modules import key
-from sqlalchemy.orm import joinedload
 
 
 def check_api_key():
@@ -16,44 +15,40 @@ def check_api_key():
     return True
 
 
-def abort_if_employee_not_found(user_id):
-    employee = db_session.create_session().query(Employee).get(user_id)
+def abort_if_employee_not_found(employee_id):
+    employee = db_session.create_session().query(Employee).get(employee_id)
     if not employee:
-        abort(404, message=f"Employee {user_id} not found")
+        abort(404, message=f"Employee {employee_id} not found")
 
 
 class StaffResource(Resource):
-    def get(self, user_id):
+    def get(self, employee_id):
         if not check_api_key():
             return
-        abort_if_employee_not_found(user_id)
-        return jsonify(
-            {'employee': db_session.create_session().query(Employee).options(joinedload('*')).get(user_id).to_dict(
-                only=(
-                    'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address',
-                    'email', 'native_city', 'date_of_birth', 'class_', 'pupils.id', 'user.id')
-            )})
+        abort_if_employee_not_found(employee_id)
+        return jsonify({'employee': db_session.create_session().query(Employee).get(employee_id).to_dict(only=(
+            'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address', 'email',
+            'native_city', 'date_of_birth', 'class_'))})
 
-    def delete(self, user_id):
+    def delete(self, employee_id):
         if not check_api_key():
             return
-        abort_if_employee_not_found(user_id)
+        abort_if_employee_not_found(employee_id)
         db_sess = db_session.create_session()
-        user = db_sess.query(Employee).get(user_id)['user']
-
+        user = db_sess.query(Employee).get(employee_id).user
         db_sess.delete(user)
-        db_sess.delete(db_sess.query(Employee).get(user_id))
+        db_sess.delete(db_sess.query(Employee).get(employee_id))
         db_sess.commit()
         return jsonify({'success': 'OK'})
 
-    def put(self, user_id):
+    def put(self, employee_id):
         if not check_api_key():
             return
         args = put_parser.parse_args()
-        abort_if_employee_not_found(user_id)
+        abort_if_employee_not_found(employee_id)
         db_sess = db_session.create_session()
-        employee = db_sess.query(Employee).get(user_id)
-        user = db_sess.query(Employee).get(user_id)['user']
+        employee = db_sess.query(Employee).get(employee_id)
+        user = db_sess.query(Employee).get(employee_id).user
         if 'surname' in args:
             employee.surname = args['surname']
             user.surname = args['surname']
@@ -76,10 +71,8 @@ class StaffResource(Resource):
             employee.address = args['address']
         if 'class_' in args:
             employee.class_ = args['class_']
-
         if 'password' in args:
             user.set_password(args['password'])
-
         db_sess.commit()
         return jsonify({'success': 'OK'})
 
@@ -88,10 +81,10 @@ class StaffListResource(Resource):
     def get(self):
         if not check_api_key():
             return
-        return jsonify({'staff': [user.to_dict(
-            only=(
-                'id', 'surname', 'name', 'patronymic', 'position', 'email', 'class_')) for user in
-            db_session.create_session().query(Employee).options(joinedload('*')).all()]})
+        return jsonify({'staff': [employee.to_dict(only=(
+            'id', 'surname', 'name', 'patronymic', 'age', 'position', 'speciality', 'experience', 'address', 'email',
+            'native_city', 'date_of_birth', 'class_')) for employee in
+            db_session.create_session().query(Employee).all()]})
 
     def post(self):
         if not check_api_key():
@@ -103,7 +96,7 @@ class StaffListResource(Resource):
                             experience=args['experience'], address=args['address'], email=args['email'],
                             native_city=args['native_city'])
         employee.set_date(args['date_of_birth'])
-        if 'classroom_teacher' in args:
+        if 'class_' in args.keys():
             employee.class_ = args['class_']
         user = User(surname=args['surname'], name=args['name'], patronymic=args['patronymic'], email=args['email'])
         user.set_password(args['password'])
@@ -111,7 +104,6 @@ class StaffListResource(Resource):
         db_sess.add(employee)
         db_sess.add(user)
         db_sess.commit()
-
         return jsonify({'success': 'OK'})
 
 
@@ -123,12 +115,10 @@ parser.add_argument('position', required=True)
 parser.add_argument('speciality', required=True)
 parser.add_argument('experience', required=True)
 parser.add_argument('address', required=True)
-parser.add_argument('classroom_teacher')
 parser.add_argument('class_')
 parser.add_argument('date_of_birth', required=True, type=date)
 parser.add_argument('email', required=True)
 parser.add_argument('password', required=True)
-
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('surname')
 put_parser.add_argument('name')
@@ -137,7 +127,6 @@ put_parser.add_argument('position')
 put_parser.add_argument('speciality')
 put_parser.add_argument('experience')
 put_parser.add_argument('address')
-put_parser.add_argument('classroom_teacher')
 put_parser.add_argument('class_', )
 put_parser.add_argument('email')
 put_parser.add_argument('password')

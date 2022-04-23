@@ -59,7 +59,6 @@ class UsersResource(Resource):
 
 
 class UsersListResource(Resource):
-
     def get(self):
         if not check_api_key():
             return
@@ -87,7 +86,6 @@ parser.add_argument('patronymic', required=True)
 parser.add_argument('date_of_birth', required=True, type=date)
 parser.add_argument('email', required=True)
 parser.add_argument('password', required=True)
-
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('surname')
 put_parser.add_argument('name')
