@@ -1,4 +1,5 @@
 from flask_restful import reqparse, abort, Resource
+from sqlalchemy.exc import IntegrityError
 from data import db_session
 from data.users import User
 from data.staff import Employee
@@ -73,7 +74,11 @@ class StaffResource(Resource):
             employee.class_ = args['class_']
         if 'password' in args:
             user.set_password(args['password'])
-        db_sess.commit()
+        try:
+            db_sess.commit()
+        except IntegrityError:
+            db_sess.rollback()
+            return jsonify({'error': 'IntegrityError'})
         return jsonify({'success': 'OK'})
 
 
@@ -103,7 +108,11 @@ class StaffListResource(Resource):
         user.set_date(args['date_of_birth'])
         db_sess.add(employee)
         db_sess.add(user)
-        db_sess.commit()
+        try:
+            db_sess.commit()
+        except IntegrityError:
+            db_sess.rollback()
+            return jsonify({'error': 'IntegrityError'})
         return jsonify({'success': 'OK'})
 
 
