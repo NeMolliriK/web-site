@@ -22,7 +22,7 @@ def abort_if_student_not_found(student_id):
         abort(404, message=f"Student {student_id} not found")
 
 
-class StudentResource(Resource):
+class PupilsResource(Resource):
     def get(self, student_id):
         if not check_api_key():
             return
@@ -79,7 +79,7 @@ class StudentResource(Resource):
         return jsonify({'success': 'OK'})
 
 
-class StudentListResource(Resource):
+class PupilsListResource(Resource):
     def get(self):
         if not check_api_key():
             return
