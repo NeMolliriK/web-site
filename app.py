@@ -2,7 +2,6 @@ from os import environ
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request
 from flask_login import login_required, logout_user, LoginManager, login_user, current_user
-from flask_restful import Api
 from data import db_session
 from data.pupils import Student
 from data.staff import Employee
@@ -13,20 +12,8 @@ from waitress import serve
 from forms.staff import AddEmployee, EditEmployee
 from mail_sender import send_email
 from forms.pupils import AddStudent, EditStudent, AddStudentWithoutClass, EditStudentWithoutClass
-from rest_api.users_resources import UsersListResource, UsersResource
-from rest_api.staff_resources import StaffListResource, StaffResource
-from rest_api.pupils_resources import StudentListResource, StudentResource
 
 app = Flask(__name__)
-
-api = Api(app)
-api.add_resource(UsersListResource, '/api/users')
-api.add_resource(UsersResource, '/api/users/<int:user_id>')
-api.add_resource(StaffListResource, '/api/staff')
-api.add_resource(StaffResource, '/api/staff/<int:user_id>')
-api.add_resource(StudentListResource, '/api/pupils')
-api.add_resource(StudentResource, '/api/pupils/<int:user_id>')
-
 app.config['SECRET_KEY'] = 'ijB9sBTlZaOFFj1YB{'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -291,5 +278,4 @@ def not_enough_rights(error):
 
 
 if __name__ == '__main__':
-    app.run()
-    # serve(app, host='0.0.0.0', port=int(environ.get("PORT", 5000)))
+    serve(app, host='0.0.0.0', port=int(environ.get("PORT", 5000)))
