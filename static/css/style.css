@@ -1,5 +1,21 @@
 body {
-    font: x-large "Times New Roman", serif;
+    position: relative;
+    margin: 0;
+    min-width: 1408px;
+    font-family: "Montserrat", "Helvetica", "Arial", sans-serif;
+    font-size: 16px;
+    line-height: 32px;
+    color: #f2f2f2;
+    background-color: #141530;
+    background-image: url("../img/pattern-lines-hero.svg");
+    background-position: center;
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+html {
+    height: 100%;
 }
 
 .navbar-brand:first-child {
@@ -30,7 +46,84 @@ form.gallery {
     border: 1px solid gray;
     border-radius: 5px;
     padding: 10px;
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 20px;
+    margin: 20px auto;
+}
+
+footer a {
+    position: relative;
+    margin-right: 64px;
+    padding-bottom: 10px;
+    padding-top: 9px;
+    font-weight: 500;
+    text-decoration: none;
+    background-repeat: no-repeat;
+    background-position: left;
+    color: inherit;
+}
+
+footer > div {
+    max-width: 1408px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+footer a {
+    position: relative;
+    margin-right: 64px;
+    padding-bottom: 10px;
+    padding-top: 9px;
+    font-weight: 500;
+    text-decoration: none;
+    background-repeat: no-repeat;
+    background-position: left;
+    color: inherit;
+}
+
+footer a:focus,
+footer a:hover {
+    color: #f9dd79;
+}
+
+footer a::after {
+    position: absolute;
+    content: "";
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #f9dd79;
+    transition: width 200ms;
+}
+
+footer a:hover::after {
+    width: 100%;
+}
+
+.footer-email {
+    padding-left: 28px;
+    background-image: url("../img/icon-email.svg");
+}
+
+.footer-email:focus,
+.footer-email:hover {
+    background-image: url("../img/icon-email-alt.svg");
+}
+
+.footer-phone {
+    padding-left: 21px;
+    background-image: url("../img/icon-phone.svg");
+}
+
+.footer-phone:focus,
+.footer-phone:hover {
+    background-image: url("../img/icon-phone-alt.svg");
+}
+
+footer a:active {
+    opacity: 0.5;
+}
+
+footer {
+    padding: 40px 0;
+    background-color: #212349;
 }

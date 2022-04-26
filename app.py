@@ -299,5 +299,4 @@ def not_enough_rights(error):
 
 
 if __name__ == '__main__':
-    app.run()
-    # serve(app, host='0.0.0.0', port=int(environ.get("PORT", 5000)))
+    serve(app, host='0.0.0.0', port=int(environ.get("PORT", 5000)))
