@@ -258,6 +258,7 @@ def delete_student(id):
 
 
 @app.route('/gallery', methods=['POST', 'GET'])
+@login_required
 def galery():
     if request.method == 'POST':
         request.files["file"].save(f'static/img/gallery/{"".join(choice(ascii_letters) for _ in range(18))}.jpg')
