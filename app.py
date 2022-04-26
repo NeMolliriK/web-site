@@ -1,4 +1,6 @@
-from os import environ
+from os import environ, listdir
+from random import choice
+from string import ascii_letters
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request
 from flask_login import login_required, logout_user, LoginManager, login_user, current_user
@@ -264,6 +266,14 @@ def delete_student(id):
     db_sess.delete(student)
     db_sess.commit()
     return redirect('/pupils')
+
+
+@app.route('/gallery', methods=['POST', 'GET'])
+@login_required
+def galery():
+    if request.method == 'POST':
+        request.files["file"].save(f'static/img/gallery/{"".join(choice(ascii_letters) for _ in range(18))}.jpg')
+    return render_template("gallery.html", title="School gallery", files=listdir("static/img/gallery"), gallery=1)
 
 
 @app.route('/logout')
