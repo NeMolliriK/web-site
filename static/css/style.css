@@ -25,3 +25,13 @@ td {
     padding: 5px;
     border: 1px solid black;
 }
+
+form.gallery {
+    max-width: 450px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 20px;
+}
