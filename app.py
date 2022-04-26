@@ -1,6 +1,4 @@
-from os import environ, listdir
-from random import choice
-from string import ascii_letters
+from os import environ, listdir, remove
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request
 from flask_login import login_required, logout_user, LoginManager, login_user, current_user
@@ -33,6 +31,7 @@ login_manager.init_app(app)
 load_dotenv()
 db_session.global_init("db/school.sqlite")
 db_sess = db_session.create_session()
+IMG = 3
 
 
 @app.route('/')
@@ -271,8 +270,13 @@ def delete_student(id):
 @app.route('/gallery', methods=['POST', 'GET'])
 @login_required
 def galery():
+    global IMG
     if request.method == 'POST':
-        request.files["file"].save(f'static/img/gallery/{"".join(choice(ascii_letters) for _ in range(18))}.jpg')
+        try:
+            request.files["file"].save(f'static/img/gallery/img_{IMG}.jpg')
+            IMG += 1
+        except Exception:
+            remove(f'static/img/gallery/{request.form.get("select")}')
     return render_template("gallery.html", title="School gallery", files=listdir("static/img/gallery"), gallery=1)
 
 

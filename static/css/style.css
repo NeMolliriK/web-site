@@ -46,7 +46,14 @@ form.gallery {
     border: 1px solid gray;
     border-radius: 5px;
     padding: 10px;
-    margin: 20px auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.flex {
+    display: flex;
+    column-gap: 20px;
 }
 
 footer a {
