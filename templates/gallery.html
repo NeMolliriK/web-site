@@ -24,9 +24,9 @@
         <form method="post" enctype="multipart/form-data" class="gallery">
             <div class="mb-3">
                 <label for="formFile" class="form-label">Choose an image</label>
-                <input class="form-control" type="file" id="formFile">
+                <input class="form-control" type="file" id="formFile" name="file" accept="image/*">
             </div>
-            <button type="submit" class="btn btn-primary gallery">Add</button>
+            <button type="submit" class="btn btn-primary">Add</button>
         </form>
     </div>
 {% endblock %}
